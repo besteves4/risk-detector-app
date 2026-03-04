@@ -11,118 +11,114 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 {
-  ?agreement :policyGraph ?G .
+    ?agreement :policyGraph ?G .
 
-  ?G log:includes {
-      ?perm a odrl:Permission ;
-      odrl:assignee ?p ;
-      odrl:action tosl:terminate ;
-      odrl:target ?a .
+    ?G log:includes {
+        ?perm a odrl:Permission ;
+        odrl:assignee ?p ;
+        odrl:action tosl:terminate ;
+        odrl:target ?a .
 
-      ?p a tosl:Provider .
-  } .
+        ?p a tosl:Provider .
+    } .
 
-  ?G log:notIncludes {
-      ?perm odrl:constraint [
-        odrl:leftOperand odrl:delayPeriod
-      ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:constraint [
+            odrl:leftOperand odrl:delayPeriod
+        ] .
+    } .
 
-  ?G log:notIncludes {
-    ?perm odrl:constraint [
-      odrl:leftOperand tosl:justification
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:constraint [
+        odrl:leftOperand tosl:justification
+        ] .
+    } .
 
-  ?G log:notIncludes {
-    ?perm odrl:duty [
-      odrl:action odrl:inform
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:duty [
+        odrl:action odrl:inform
+        ] .
+    } .
 
-   ?G log:notIncludes {
-    ?perm odrl:duty [
-      odrl:action odrl:compensate
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:duty [
+        odrl:action odrl:compensate
+        ] .
+    } .
 
-  ( "Risk: agreement or services termination is permitted without restrictions (no justification constraint, no prior notice constraint, no duty to inform, and non-compensation). Permission: %s"
-    ?perm ) string:format ?why .
+    ( "Risk: agreement or services termination is permitted without restrictions (no justification constraint, no prior notice constraint, no duty to inform, and non-compensation). Permission: %s"
+        ?perm ) string:format ?why .
 
-  ( ?agreement :UnfairContractClause ?perm ) log:skolem ?src .
-  ( ?agreement :RiskDataDeletion ?perm ) log:skolem ?risk .
+    ( ?agreement :UnfairContractClause ?perm ) log:skolem ?src .
+    ( ?agreement :RiskDataDeletion ?perm ) log:skolem ?risk .
 
 }
 =>
 {
 
-  ?src a new:UnilateralTerminationClause ;
-    dpv:hasContractualClause ?perm .
+    ?perm a dpv:Permission .
 
-  ?risk a dpv:Risk ;
-    skos:broader risk:DataUnavailable, risk:ServiceTermination, risk:Harm ;
-    dpv:hasRiskSource ?src ;
-    dct:description ?why .
+    ?src a new:UnilateralTerminationClause ;
+        dpv:hasContractualClause ?perm .
 
-  ?risk dpv:hasConsequence [
-     a risk:DataLoss, risk:ServiceNotProvided ;
-     dpv:hasImpact risk:FinancialLoss, risk:NonMaterialDamage, risk:CustomerConfidenceLoss ;
-     dpv:isMitigatedByMeasure new:TerminationNotice, new:ProvideJustification, new:RightToCompensation
-  ] .
+    ?risk a dpv:Risk ;
+        skos:broader risk:DataUnavailable, risk:ServiceTermination, risk:Harm ;
+        dpv:hasRiskSource ?src ;
+        dct:description ?why .
 
-  new:UnilateralTerminationClause a new:UnfairContractClause, dpv:RiskConcept, risk:PotentialRiskSource, risk:PotentialRisk ;
-      skos:broader risk:OrganisationalManagementRisk .
+    ?risk dpv:hasConsequence [
+        a risk:DataLoss, risk:ServiceNotProvided ;
+        dpv:hasImpact risk:FinancialLoss, risk:NonMaterialDamage, risk:CustomerConfidenceLoss ;
+        dpv:isMitigatedByMeasure new:TerminationNotice, new:ProvideJustification, new:RightToCompensation
+    ] .
 
-  ?perm a dpv:Permission .
+    new:TerminationNotice a dpv:OrganisationalMeasure, dpv:RiskMitigationMeasure ;
+        skos:broader dpv:Notice ;
+        :suggestAdd {
+            ?perm 
+            odrl:constraint [
+                a odrl:Constraint ;
+                odrl:leftOperand odrl:delayPeriod ;
+                odrl:operator odrl:gteq ;
+                odrl:rightOperand "P30D"^^xsd:duration
+            ] ;
+            odrl:duty [
+                a odrl:Duty ;
+                odrl:assignee :provider ;
+                odrl:action odrl:inform ;
+                odrl:target ?a ;
+                odrl:informedParty :customer ;
+                odrl:constraint [
+                    a odrl:Constraint ;
+                    odrl:leftOperand odrl:deliveryChannel ;
+                    odrl:operator odrl:isAnyOf ;
+                    odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
+                ]
+            ] .
+        } .
 
-  new:TerminationNotice a dpv:OrganisationalMeasure, dpv:RiskMitigationMeasure ;
-    skos:broader dpv:Notice ;
-    :suggestAdd {
-      ?perm 
-        odrl:constraint [
-          a odrl:Constraint ;
-          odrl:leftOperand odrl:delayPeriod ;
-          odrl:operator odrl:gteq ;
-          odrl:rightOperand "P30D"^^xsd:duration
-        ] ;
-        odrl:duty [
-          a odrl:Duty ;
-          odrl:assignee :provider ;
-          odrl:action odrl:inform ;
-          odrl:target ?a ;
-          odrl:informedParty :customer ;
-          odrl:constraint [
-            a odrl:Constraint ;
-            odrl:leftOperand odrl:deliveryChannel ;
-            odrl:operator odrl:isAnyOf ;
-            odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
-          ]
-        ] .
-    } .
+    new:ProvideJustification a dpv:RiskMitigationMeasure ;
+        :suggestAdd {
+            ?perm 
+            odrl:constraint [
+                a odrl:Constraint ;
+                odrl:leftOperand tosl:justification ;
+                odrl:operator odrl:isAnyOf ;
+                odrl:rightOperand ( "termviolation" "serviceprotection" "fraudprevention" )
+            ] .
+        } .
 
-  new:ProvideJustification a dpv:RiskMitigationMeasure ;
-    :suggestAdd {
-      ?perm 
-        odrl:constraint [
-          a odrl:Constraint ;
-          odrl:leftOperand tosl:justification ;
-          odrl:operator odrl:isAnyOf ;
-          odrl:rightOperand ( "termviolation" "serviceprotection" "fraudprevention" )
-        ] .
-    } .
+    new:RightToCompensation a dpv:RiskMitigationMeasure ;
+        :suggestAdd {
+            ?perm 
+            odrl:duty [
+                a odrl:Duty ;
+                odrl:assignee :provider ;
+                odrl:action odrl:compensate ;
+                odrl:target ?a ;
+                odrl:informedParty :customer ;
+            ] .
+        } .
 
-  new:RightToCompensation a dpv:RiskMitigationMeasure ;
-    :suggestAdd {
-      ?perm 
-        odrl:duty [
-          a odrl:Duty ;
-          odrl:assignee :provider ;
-          odrl:action odrl:compensate ;
-          odrl:target ?a ;
-          odrl:informedParty :customer ;
-        ] .
-    } .
-
-  ?risk log:outputString ?why .
-
+    ?risk log:outputString ?why .
 } .

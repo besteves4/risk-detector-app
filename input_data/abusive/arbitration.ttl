@@ -6,11 +6,13 @@
 
 :Agreement a odrl:Agreement ;
     dcterms:title "Agreement without litigation process and arbitration obligatory" ;
-    tosl:onDispute :DisputeResolutionArbitration ;
+    tosl:onDispute :arbitration ;
     :policyGraph {
-        :DisputeResolutionArbitration a tosl:Arbitration;
+        :arbitration a tosl:Arbitration;
             dcterms:description "This Agreement will be governed by the laws of The Netherlands, and the parties consent to the exclusive jurisdiction of its courts for any related actions.";    
             tosl:targetParty :customer ;
             tosl:takesPlaceIn :netherlandsCourts ;
             tosl:governedBy :netherlandsLaw .
+        
+        :customer a tosl:Customer .
     } .

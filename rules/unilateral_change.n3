@@ -11,124 +11,120 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 {
-  ?agreement :policyGraph ?G .
+    ?agreement :policyGraph ?G .
 
-  ?G log:includes {
-      ?perm a odrl:Permission ;
-      odrl:assignee ?p ;
-      odrl:action odrl:modify ;
-      odrl:target ?a .
+    ?G log:includes {
+        ?perm a odrl:Permission ;
+        odrl:assignee ?p ;
+        odrl:action odrl:modify ;
+        odrl:target ?a .
 
-      ?p a tosl:Provider .
-  } .
+        ?p a tosl:Provider .
+    } .
 
-  ?G log:notIncludes {
-      ?perm odrl:constraint [
-        odrl:leftOperand odrl:delayPeriod
-      ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:constraint [
+            odrl:leftOperand odrl:delayPeriod
+        ] .
+    } .
 
-  ?G log:notIncludes {
-    ?perm odrl:constraint [
-        odrl:leftOperand tosl:justification
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:constraint [
+            odrl:leftOperand tosl:justification
+        ] .
+    } .
 
-  ?G log:notIncludes {
-    ?perm odrl:duty [
-        odrl:action odrl:inform
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:duty [
+            odrl:action odrl:inform
+        ] .
+    } .
 
-  ?G log:notIncludes {
-    ?perm odrl:constraint[
-        odrl:leftOperand tosl:consentType;
-        odrl:operator odrl:eq ;
-        odrl:rightOperand tosl:implicitConsent
-    ] .
-  } .
+    ?G log:notIncludes {
+        ?perm odrl:constraint[
+            odrl:leftOperand tosl:consentType;
+            odrl:operator odrl:eq ;
+            odrl:rightOperand tosl:implicitConsent
+        ] .
+    } .
 
-  ( "Risk: agreement or services change is permitted without restrictions (no justification constraint, no prior notice constraint, no duty to inform and not reaffirm consent). Permission: %s"
-    ?perm ) string:format ?why .
+    ( "Risk: agreement or services change is permitted without restrictions (no justification constraint, no prior notice constraint, no duty to inform and not reaffirm consent). Permission: %s"
+        ?perm ) string:format ?why .
 
-  ( ?agreement :UnfairContractClause ?perm ) log:skolem ?src .
-  ( ?agreement :RiskAgreementOrServicesChange ?perm ) log:skolem ?risk .
+    ( ?agreement :UnfairContractClause ?perm ) log:skolem ?src .
+    ( ?agreement :RiskAgreementOrServicesChange ?perm ) log:skolem ?risk .
 
-  ( ?risk :MitigationDelayPeriod ?perm ) log:skolem ?mDelay .
-  ( ?risk :MitigationJustification ?perm ) log:skolem ?mJust .
-  ( ?risk :MitigationDutyToInform ?perm ) log:skolem ?mInform .
-  ( ?risk :MitigationExplicitConsent ?perm ) log:skolem ?mConsent .
+    ( ?risk :MitigationDelayPeriod ?perm ) log:skolem ?mDelay .
+    ( ?risk :MitigationJustification ?perm ) log:skolem ?mJust .
+    ( ?risk :MitigationDutyToInform ?perm ) log:skolem ?mInform .
+    ( ?risk :MitigationExplicitConsent ?perm ) log:skolem ?mConsent .
 
 }
 =>
 {
 
- ?src a new:UnilateralChangeClause ;
+    ?perm a dpv:Permission .
+
+    ?src a new:UnilateralChangeClause ;
     dpv:hasContractualClause ?perm .
 
-  ?risk a dpv:Risk ;
-    skos:broader risk:Harm, risk:ServiceCostIncreased, risk:ServicePartiallyProvided  ;
-    dpv:hasRiskSource ?src ;
-    dct:description ?why .
+    ?risk a dpv:Risk ;
+        skos:broader risk:Harm, risk:ServiceCostIncreased, risk:ServicePartiallyProvided  ;
+        dpv:hasRiskSource ?src ;
+        dct:description ?why .
 
-  ?risk dpv:hasConsequence [
-     a risk:QualityDegraded, risk:ServiceQualityReduced, risk:ServiceProvisionDelayed ;
-     dpv:hasImpact risk:FinancialLoss, risk:NonMaterialDamage, risk:CustomerConfidenceLoss ;
-     dpv:isMitigatedByMeasure new:ChangeNotice, new:ProvideJustification, new:ReaffirmConsent
-  ] .
+    ?risk dpv:hasConsequence [
+        a risk:QualityDegraded, risk:ServiceQualityReduced, risk:ServiceProvisionDelayed ;
+        dpv:hasImpact risk:FinancialLoss, risk:NonMaterialDamage, risk:CustomerConfidenceLoss ;
+        dpv:isMitigatedByMeasure new:ChangeNotice, new:ProvideJustification, new:ReaffirmConsent
+    ] .
 
-  new:UnilateralChangeClause a new:UnfairContractClause, dpv:RiskConcept, risk:PotentialRiskSource, risk:PotentialRisk ;
-      skos:broader risk:OrganisationalManagementRisk .
+    new:ChangeNotice a dpv:OrganisationalMeasure, dpv:RiskMitigationMeasure ;
+        skos:broader dpv:Notice ;
+        :suggestAdd {
+            ?perm 
+            odrl:constraint [
+                a odrl:Constraint ;
+                odrl:leftOperand odrl:delayPeriod ;
+                odrl:operator odrl:gteq ;
+                odrl:rightOperand "P30D"^^xsd:duration
+            ] ;
+            odrl:duty [
+                a odrl:Duty ;
+                odrl:assignee :provider ;
+                odrl:action odrl:inform ;
+                odrl:target :pricing ;
+                odrl:informedParty :customer ;
+                odrl:constraint [
+                    a odrl:Constraint ;
+                    odrl:leftOperand odrl:deliveryChannel ;
+                    odrl:operator odrl:isAnyOf ;
+                    odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
+                ]
+            ] .
+        } .
 
-  ?perm a dpv:Permission .
+    new:ReaffirmConsent a dpv:RiskMitigationMeasure ;
+        :suggestAdd {
+            ?perm 
+            odrl:constraint [
+                a odrl:Constraint ;
+                odrl:leftOperand tosl:consentType;
+                odrl:operator odrl:eq ;
+                odrl:rightOperand tosl:implicitConsent
+            ] .
+        } .
 
-  new:ChangeNotice a dpv:OrganisationalMeasure, dpv:RiskMitigationMeasure ;
-    skos:broader dpv:Notice ;
-    :suggestAdd {
-      ?perm 
-        odrl:constraint [
-          a odrl:Constraint ;
-          odrl:leftOperand odrl:delayPeriod ;
-          odrl:operator odrl:gteq ;
-          odrl:rightOperand "P30D"^^xsd:duration
-        ] ;
-        odrl:duty [
-          a odrl:Duty ;
-          odrl:assignee :provider ;
-          odrl:action odrl:inform ;
-          odrl:target :pricing ;
-          odrl:informedParty :customer ;
-          odrl:constraint [
-            a odrl:Constraint ;
-            odrl:leftOperand odrl:deliveryChannel ;
-            odrl:operator odrl:isAnyOf ;
-            odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
-          ]
-        ] .
-    } .
+    new:ProvideJustification a dpv:RiskMitigationMeasure ;
+        :suggestAdd {
+            ?perm 
+            odrl:constraint [
+                a odrl:Constraint ;
+                odrl:leftOperand tosl:justification ;
+                odrl:operator odrl:isAnyOf ;
+                odrl:rightOperand ( "lawchange" "update" )
+            ] .
+        } .
 
-  new:ReaffirmConsent a dpv:RiskMitigationMeasure ;
-    :suggestAdd {
-      ?perm 
-        odrl:constraint [
-          a odrl:Constraint ;
-          odrl:leftOperand tosl:consentType;
-          odrl:operator odrl:eq ;
-          odrl:rightOperand tosl:implicitConsent
-        ] .
-    } .
-
-  new:ProvideJustification a dpv:RiskMitigationMeasure ;
-    :suggestAdd {
-      ?perm 
-        odrl:constraint [
-          a odrl:Constraint ;
-          odrl:leftOperand tosl:justification ;
-          odrl:operator odrl:isAnyOf ;
-          odrl:rightOperand ( "lawchange" "update" )
-        ] .
-    } .
-
-  ?risk log:outputString ?why .
-
+    ?risk log:outputString ?why .
 } .

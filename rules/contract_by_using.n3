@@ -40,6 +40,8 @@
 =>
 {
 
+    ?duty a dpv:Obligation .
+
     ?src a new:ContractByUsingClause ;
         dpv:hasContractualClause ?duty .
 
@@ -54,19 +56,17 @@
         dpv:isMitigatedByMeasure new:ExplicitConsentRequirement
     ] .
 
-    ?duty a dpv:Obligation .
-
     new:ExplicitConsentRequirement a dpv:RiskMitigationMeasure ;
-    skos:broader dpv:Consent ;
-    :suggestAdd {
-        ?duty
-        odrl:constraint [
-            a odrl:Constraint;
-            odrl:leftOperand tosl:consentType ;
-            odrl:operator odrl:eq ;
-            odrl:rightOperand tosl:explicitConsent
-        ] .
-    } .
+        skos:broader dpv:Consent ;
+        :suggestAdd {
+            ?duty
+            odrl:constraint [
+                a odrl:Constraint;
+                odrl:leftOperand tosl:consentType ;
+                odrl:operator odrl:eq ;
+                odrl:rightOperand tosl:explicitConsent
+            ] .
+        } .
 
     ?risk log:outputString ?why .
 
