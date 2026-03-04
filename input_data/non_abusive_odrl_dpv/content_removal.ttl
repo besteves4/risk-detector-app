@@ -25,11 +25,12 @@
             ] ;
             odrl:constraint [
                 a odrl:Constraint ;
-                odrl:leftOperand dpv:hasJustification ;
+                odrl:leftOperand dpv:hasJustification ; # or dpv:Justification
                 odrl:operator odrl:isAnyOf ;
                 odrl:rightOperand (
-                    justifications:ConfidentialityObligationCompromised
+                    justifications:SecurityImpaired
                     justifications:UnlawfulActivityObjection
+                    justifications:LegalObligation
                 )
             ] ;
             odrl:duty [
@@ -57,5 +58,5 @@
                 a dpv:PersonalData ;
                 skos:broader pd:EmailAddress 
             ] . 
-        :customer a dpv:Customer
+        :customer a dpv:Customer .
 } .

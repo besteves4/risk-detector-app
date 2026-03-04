@@ -21,16 +21,24 @@
             ] ;
             odrl:constraint [
                 a odrl:Constraint ;
-                odrl:leftOperand tosl:justification ;
+                odrl:leftOperand dpv:hasJustification ; # or dpv:Justification
                 odrl:operator odrl:isAnyOf ;
-                odrl:rightOperand ( "lawchange" "update" )
+                odrl:rightOperand (
+                    justifications:LegalObligation # ServiceUpdate and ImproveFeatures
+                )
             ] ;
             odrl:constraint [
                 a odrl:Constraint ;
-                odrl:leftOperand tosl:consentType;
+                odrl:leftOperand dpv:hasConsentStatus ; # or dpv:ConsentStatus
                 odrl:operator odrl:eq ;
-                odrl:rightOperand tosl:implicitConsent
+                odrl:rightOperand dpv:ConsentGiven
             ] ;
+            odrl:duty [
+                a odrl:Duty ;
+                odrl:action dpv:ReaffirmConsent ;
+                odrl:assignee :customer ;
+                odrl:target :pricing
+            ] .
             odrl:duty [
                 a odrl:Duty ;
                 odrl:action odrl:inform ;
@@ -44,7 +52,7 @@
                     odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
                 ] ;
             ] .   
-
-        :provider a tosl:Provider .
-        :customer a tosl:Customer .
+        
+        :provider a dpv:ServiceProvider .
+        :customer a dpv:Customer .
     } .
