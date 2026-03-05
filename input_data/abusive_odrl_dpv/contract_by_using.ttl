@@ -16,7 +16,7 @@
         :DutyImplicitConsent a odrl:Duty ;
             dcterms:description "You confirm that you accept these Terms when you use the Services.";
             odrl:assignee :customer ;
-            odrl:action dpv-odrl:provideConsent ;
+            odrl:action dpv-odrl:ProvideConsent ;
             odrl:target :agreement ;
             odrl:constraint [
                     a odrl:Constraint;

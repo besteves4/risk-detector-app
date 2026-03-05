@@ -28,7 +28,7 @@
                 odrl:leftOperand dpv:hasJustification ; # or dpv:Justification
                 odrl:operator odrl:isAnyOf ;
                 odrl:rightOperand (
-                    justifications:LegalObligation # ServiceUpdate and ImproveFeatures
+                    justifications:LegalObligation # ServiceUpdate and ImproveFeatures dpv:ImproveExistingProductsAndServices a dpv:Purpose
                 )
             ] ;
             odrl:constraint [

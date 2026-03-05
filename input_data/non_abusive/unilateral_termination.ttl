@@ -38,12 +38,13 @@
                     odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
                 ]
             ] ;
-             odrl:duty [
+            odrl:duty [
                 a odrl:Duty ;
                 odrl:assignee :provider ;
                 odrl:action odrl:compensate ;
                 odrl:target :agreement ;
-                odrl:informedParty :customer ;
+                odrl:compensatedParty :customer ;
+                odrl:compensatingParty :provider ;
             ] .
             
         :provider a tosl:Provider .
