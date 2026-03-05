@@ -33,16 +33,10 @@
             ] ;
             odrl:constraint [
                 a odrl:Constraint ;
-                odrl:leftOperand dpv:hasConsentStatus ; # or dpv:ConsentStatus
+                odrl:leftOperand dpv:ConsentControl ;
                 odrl:operator odrl:eq ;
-                odrl:rightOperand dpv:ConsentGiven
+                odrl:rightOperand dpv:ReaffirmConsent
             ] ;
-            odrl:duty [
-                a odrl:Duty ;
-                odrl:action dpv-odrl:ReaffirmConsent ;
-                odrl:assignee :customer ;
-                odrl:target :pricing
-            ] .
             odrl:duty [
                 a odrl:Duty ;
                 odrl:action odrl:inform ;
@@ -52,8 +46,8 @@
                 odrl:constraint [
                     a odrl:Constraint ;
                     odrl:leftOperand odrl:deliveryChannel ;
-                    odrl:operator odrl:isAnyOf ;
-                    odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
+                    odrl:operator odrl:eq ;
+                    odrl:rightOperand pd:Contact
                 ] ;
             ] .   
         

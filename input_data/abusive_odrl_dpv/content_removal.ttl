@@ -19,8 +19,6 @@
             odrl:target :userData .
 
         :provider a dpv:ServiceProvider .
-        :userData [
-            a dpv:PersonalData ;
-            skos:broader pd:EmailAddress 
-        ] .
+        :userData a dpv:PersonalData ;
+            skos:broader pd:EmailAddress .
     } .

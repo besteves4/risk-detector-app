@@ -48,15 +48,13 @@
                 odrl:constraint [
                     a odrl:Constraint ;
                     odrl:leftOperand odrl:deliveryChannel ;
-                    odrl:operator odrl:isAnyOf ;
-                    odrl:rightOperand ( "email"^^xsd:string "inProductNotification"^^xsd:string )
+                    odrl:operator odrl:eq ;
+                    odrl:rightOperand pd:Contact
                 ] ;
             ] .
 
         :provider a dpv:ServiceProvider .
-        :userData [
-                a dpv:PersonalData ;
-                skos:broader pd:EmailAddress 
-            ] . 
+        :userData a dpv:PersonalData ;
+            skos:broader pd:EmailAddress .
         :customer a dpv:Customer .
 } .
